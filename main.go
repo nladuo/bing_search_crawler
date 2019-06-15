@@ -51,7 +51,6 @@ Tag:
 	// fmt.Println(query)
 	url := "http://www.bing.com/search?format=rss&ensearch=1&FORM=QBLH&" + query
 	res, err := grequests.Get(url, &grequests.RequestOptions{
-		//结构体可以对指定的类型给值，而不一定都赋值
 		Headers: map[string]string{
 			"Cookie":     "SRCHD=AF=QBLH; SRCHUID=V=2&GUID=9E91686DABB746D3A145437AAA51664A&dmnchg=1;SRCHUSR=DOB=20190615;_EDGE_S=F=1&SID=0C4E80C2FD54606411D68DBEFC7A617B;_EDGE_V=1;_SS=SID=0C4E80C2FD54606411D68DBEFC7A617B&HV=1560621128;DUP=Q=nKXbmv1AbAz0eYEX9yQHqw2&T=361475528&A=2&IG=5C70812122AF4E0CB0E68E4C73522768;MUIDB=18D6EDD8BAD660C22019E0A4BBF861E7;",
 			"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36",
