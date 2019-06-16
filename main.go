@@ -46,10 +46,9 @@ func crawlAndUpdate(task Task, coll *mgo.Collection, counter int) error {
 	v := url.Values{}
 	v.Add("q", task.Query)
 	query := v.Encode()
-	failedTime := 0
-Tag:
-	// fmt.Println(query)
 	url := "http://www.bing.com/search?format=rss&ensearch=1&FORM=QBLH&" + query
+	failedTime := 0
+TAG:
 	res, err := grequests.Get(url, &grequests.RequestOptions{
 		Headers: map[string]string{
 			"Cookie":     "SRCHD=AF=QBLH; SRCHUID=V=2&GUID=9E91686DABB746D3A145437AAA51664A&dmnchg=1;SRCHUSR=DOB=20190615;_EDGE_S=F=1&SID=0C4E80C2FD54606411D68DBEFC7A617B;_EDGE_V=1;_SS=SID=0C4E80C2FD54606411D68DBEFC7A617B&HV=1560621128;DUP=Q=nKXbmv1AbAz0eYEX9yQHqw2&T=361475528&A=2&IG=5C70812122AF4E0CB0E68E4C73522768;MUIDB=18D6EDD8BAD660C22019E0A4BBF861E7;",
@@ -65,12 +64,11 @@ Tag:
 
 	if (len(texts) == 0) && (failedTime <= 4) {
 		failedTime += 1
-		goto Tag
+		goto TAG
 	}
 	// fmt.Println(texts)
 
-	fmt.Println(totalCount, counter, task.Qid, task.Query, len(texts))
-	totalCount++
+	fmt.Println(counter, task.Qid, task.Query, len(texts))
 
 	data := bson.M{"$set": bson.M{"texts": texts, "is_crawled": true}}
 	err = coll.Update(bson.M{"_id": task.Id}, data)
@@ -79,12 +77,14 @@ Tag:
 
 var (
 	taskChan chan Task
-	// updateChan chan []string
-	addChan    chan int
-	totalCount int
+	addChan  chan int // channel for set the max goroutine count
 )
 
 func main() {
+	var task Task
+	taskChan = make(chan Task, 50)
+	addChan = make(chan int, 20)
+	var wg sync.WaitGroup
 
 	session, err := mgo.Dial("127.0.0.1:27017")
 	defer session.Close()
@@ -93,18 +93,10 @@ func main() {
 		panic(err)
 	}
 
-	taskChan = make(chan Task, 50)
-	addChan = make(chan int, 15) // the concurrent goroutine count
-
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB("bing").C("tasks")
 
-	var task Task
-
 	tasks := c.Find(bson.M{"is_crawled": false}).Iter()
-
-	var wg sync.WaitGroup
-	totalCount = 0
 
 	go func() {
 		for tasks.Next(&task) {
@@ -114,6 +106,7 @@ func main() {
 			Qid: "close",
 		}
 	}()
+
 	counter := 0
 	for {
 		counter += 1
@@ -126,7 +119,6 @@ func main() {
 				crawlAndUpdate(t, c, i)
 				<-addChan
 			}(counter)
-
 		} else {
 			break
 		}
