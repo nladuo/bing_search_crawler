@@ -51,11 +51,10 @@ func crawlAndUpdate(task Task, coll *mgo.Collection, counter int) error {
 TAG:
 	res, err := grequests.Get(url, &grequests.RequestOptions{
 		Headers: map[string]string{
-			"Cookie":     "SRCHD=AF=QBLH; SRCHUID=V=2&GUID=9E91686DABB746D3A145437AAA51664A&dmnchg=1;SRCHUSR=DOB=20190615;_EDGE_S=F=1&SID=0C4E80C2FD54606411D68DBEFC7A617B;_EDGE_V=1;_SS=SID=0C4E80C2FD54606411D68DBEFC7A617B&HV=1560621128;DUP=Q=nKXbmv1AbAz0eYEX9yQHqw2&T=361475528&A=2&IG=5C70812122AF4E0CB0E68E4C73522768;MUIDB=18D6EDD8BAD660C22019E0A4BBF861E7;",
+			"Cookie":     "_SS=SID=1F6B2D15FEC8668E38B8206BFFB76702&HV=1560738706; _EDGE_V=1; SRCHUSR=DOB=20190617; _EDGE_S=F=1&SID=1F6B2D15FEC8668E38B8206BFFB76702; MUID=1742D66F483D663525F7DB1149426784; SRCHUID=V=2&GUID=07B9E056CB9E40B6A16F3FC3DE2DFA8B&dmnchg=1; MUIDB=1742D66F483D663525F7DB1149426784; SRCHD=AF=QBLH;",
 			"User-Agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36",
 		},
-	},
-	)
+	})
 	if err != nil {
 		return err
 	}
@@ -83,7 +82,7 @@ var (
 func main() {
 	var task Task
 	taskChan = make(chan Task, 50)
-	addChan = make(chan int, 20)
+	addChan = make(chan int, 15)
 	var wg sync.WaitGroup
 
 	session, err := mgo.Dial("127.0.0.1:27017")
