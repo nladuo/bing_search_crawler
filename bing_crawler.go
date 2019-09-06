@@ -69,7 +69,7 @@ TAG:
 
 	fmt.Println(counter, task.Qid, task.Query, len(texts))
 
-	data := bson.M{"$set": bson.M{"texts": texts, "is_crawled": true}}
+	data := bson.M{"$set": bson.M{"body": res.String(), "is_crawled": true}}
 	err = coll.Update(bson.M{"_id": task.Id}, data)
 	return nil
 }
