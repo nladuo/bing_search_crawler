@@ -67,7 +67,8 @@ def crawl_one(task, count):
     tasks.update({'_id': task["_id"]}, {
         '$set': {
             "is_crawled": True,
-            "body": body
+            "body": body,
+            "answer_count": len(texts)
         },
     })
 

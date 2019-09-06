@@ -65,11 +65,15 @@ TAG:
 		failedTime += 1
 		goto TAG
 	}
+
+	// if len(texts) == 0 {
+	// maybe do something
+	// }
 	// fmt.Println(texts)
 
 	fmt.Println(counter, task.Qid, task.Query, len(texts))
 
-	data := bson.M{"$set": bson.M{"body": res.String(), "is_crawled": true}}
+	data := bson.M{"$set": bson.M{"body": res.String(), "is_crawled": true, "answer_count": len(texts)}}
 	err = coll.Update(bson.M{"_id": task.Id}, data)
 	return nil
 }
